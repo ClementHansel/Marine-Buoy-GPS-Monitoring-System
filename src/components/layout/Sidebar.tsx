@@ -1,18 +1,32 @@
-// src/components/layout/Sidebar.tsx
 import React from "react";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  FileText,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 
 interface SidebarProps {
-  isOpen: boolean;
-  toggleSidebar: () => void;
+  isOpen: boolean; // Large screen sidebar toggle
+  isMobileOpen: boolean; // Mobile sidebar toggle
+  toggleSidebar: () => void; // For mobile sidebar
+  toggleLargeSidebar: () => void; // For large screen sidebar
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  isOpen,
+  isMobileOpen,
+  toggleSidebar,
+  toggleLargeSidebar,
+}) => {
   return (
     <>
-      {isOpen && (
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 lg:hidden"
           onClick={toggleSidebar}
@@ -20,15 +34,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         />
       )}
 
+      {/* Sidebar */}
+
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-64",
-          "lg:translate-x-0"
+          "fixed top-16 h-[calc(100vh-4rem-4rem)] bg-gray-900 text-white shadow-lg transition-all duration-300 ease-in-out",
+          isMobileOpen ? "left-0 w-64" : "-left-64",
+          isOpen ? "lg:w-64" : "lg:w-16",
+          "lg:relative lg:translate-x-0"
         )}
         role="navigation"
         aria-label="Sidebar"
       >
+        {/* Close Button for Mobile */}
         <button
           onClick={toggleSidebar}
           className="lg:hidden absolute top-4 right-4 text-white hover:text-gray-400"
@@ -38,41 +56,42 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <X size={24} />
         </button>
 
-        <div className="p-4 space-y-4">
-          <h2 className="text-xl font-bold">Navigation</h2>
-          <nav className="space-y-2">
-            <Link
-              href="/dashboard"
-              className="block px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/dashboard/annotation"
-              className="block px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Annotation
-            </Link>
-            <Link
-              href="/dashboard/cortheaAI"
-              className="block px-4 py-2 rounded hover:bg-gray-700"
-            >
-              CortheaAI
-            </Link>
-            <Link
-              href="/dashboard/monitoring/sensors"
-              className="block px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Sensors
-            </Link>
-            <Link
-              href="/dashboard/settings"
-              className="block px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Settings
-            </Link>
-          </nav>
-        </div>
+        {/* Expand/Collapse Button for Large Screens */}
+        <button
+          onClick={toggleLargeSidebar}
+          className="hidden lg:flex absolute top-4 right-4 text-white hover:text-gray-400"
+          aria-label="Toggle sidebar"
+          title="Toggle sidebar"
+        >
+          {isOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+        </button>
+
+        {/* Sidebar Content */}
+        <nav className="mt-12 space-y-2">
+          <Link
+            href="/dashboard"
+            className="flex items-center px-4 py-3 space-x-3 hover:bg-gray-700"
+          >
+            <Home size={24} />
+            {isOpen && <span className="text-lg">Dashboard</span>}
+          </Link>
+
+          <Link
+            href="/dashboard/annotation"
+            className="flex items-center px-4 py-3 space-x-3 hover:bg-gray-700"
+          >
+            <FileText size={24} />
+            {isOpen && <span className="text-lg">Annotation</span>}
+          </Link>
+
+          <Link
+            href="/dashboard/settings"
+            className="flex items-center px-4 py-3 space-x-3 hover:bg-gray-700"
+          >
+            <Settings size={24} />
+            {isOpen && <span className="text-lg">Settings</span>}
+          </Link>
+        </nav>
       </aside>
     </>
   );
